@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniQR — Universal Anything-to-QR Studio & Scanner</title>
+  <meta name="description" content="Turn any link, text, contact vCard, Wi-Fi network, UPI/Crypto payment, audio voice note, file or location into a stunning, customized ultra-HD QR code.">
+
+  <!-- Core CSS -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+
+  <!-- Vendor Scripts (Local offline copies + fast loading) -->
+  <script src="assets/vendor/qr-code-styling.js"></script>
+  <script src="assets/vendor/html5-qrcode.min.js"></script>
+  <script src="assets/vendor/lucide.min.js"></script>
+  <script src="assets/vendor/jszip.min.js"></script>
+</head>
+<body>
+
+  <!-- Top App Navigation -->
+  <header class="app-header">
+    <div class="brand-wrapper" id="brand-home-btn" title="OmniQR Studio">
+      <div class="brand-icon">
+        <i data-lucide="qr-code"></i>
+      </div>
+      <div class="brand-title">
+        <h1>OmniQR <span class="brand-badge">STUDIO</span></h1>
+        <span class="brand-subtitle">Universal QR Code Engine & Designer</span>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="header-btn" id="btn-open-scanner" title="Scan or Upload QR Image">
+        <i data-lucide="scan"></i>
+        <span>Scan QR</span>
+      </button>
+
+      <button class="header-btn" id="btn-open-batch" title="Generate Multiple QRs">
+        <i data-lucide="layers"></i>
+        <span>Batch</span>
+      </button>
+
+      <button class="header-btn" id="btn-open-history" title="Saved History">
+        <i data-lucide="history"></i>
+        <span>History</span>
+      </button>
+
+      <button class="header-btn icon-btn" id="btn-sound-toggle" title="Toggle Haptic Sound">
+        <i data-lucide="volume-2" id="sound-icon"></i>
+      </button>
+
+      <button class="header-btn icon-btn" id="btn-theme-toggle" title="Toggle Light/Dark Theme">
+        <i data-lucide="sun" id="theme-icon"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="app-container">
+    
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-tag">
+        <i data-lucide="sparkles"></i>
+        <span>The Universal Anything-to-QR Studio</span>
+      </div>
+      <h2 class="hero-heading">Turn <span class="gradient-text">Every Given Thing</span> into a QR</h2>
+      <p class="hero-description">
+        Instantly convert links, contacts, Wi-Fi networks, UPI & crypto payments, voice notes, files, and locations into designer vector QR codes.
+      </p>
+    </div>
+
+    <!-- Category & Type Selector Bar -->
+    <section class="type-selector-wrapper" aria-label="QR Type Selector">
+      <div class="type-filter-bar">
+        <div class="type-category-group" id="category-pills">
+          <button class="category-pill active" data-cat="all">All Types</button>
+          <button class="category-pill" data-cat="web">Web & Text</button>
+          <button class="category-pill" data-cat="connect">Communication</button>
+          <button class="category-pill" data-cat="finance">Payments & Crypto</button>
+          <button class="category-pill" data-cat="utility">Utility & Media</button>
+        </div>
+
+        <div class="type-search-box">
+          <i data-lucide="search"></i>
+          <input type="text" id="type-search-input" placeholder="Find type..." autocomplete="off">
+        </div>
+      </div>
+
+      <div class="type-scroll-container" id="type-cards-grid">
+        <!-- 1. URL -->
+        <button class="type-btn active" data-type="url" data-cat="web" id="type-btn-url">
+          <div class="type-icon-wrapper"><i data-lucide="globe"></i></div>
+          <span>Website URL</span>
+        </button>
+
+        <!-- 2. Plain Text -->
+        <button class="type-btn" data-type="text" data-cat="web" id="type-btn-text">
+          <div class="type-icon-wrapper"><i data-lucide="file-text"></i></div>
+          <span>Plain Text</span>
+        </button>
+
+        <!-- 3. Wi-Fi -->
+        <button class="type-btn" data-type="wifi" data-cat="connect" id="type-btn-wifi">
+          <div class="type-icon-wrapper"><i data-lucide="wifi"></i></div>
+          <span>Wi-Fi Network</span>
+          <span class="badge-pill">Connect</span>
+        </button>
+
+        <!-- 4. vCard -->
+        <button class="type-btn" data-type="vcard" data-cat="connect" id="type-btn-vcard">
+          <div class="type-icon-wrapper"><i data-lucide="contact"></i></div>
+          <span>Digital Card</span>
+        </button>
+
+        <!-- 5. UPI Pay -->
+        <button class="type-btn" data-type="upi" data-cat="finance" id="type-btn-upi">
+          <div class="type-icon-wrapper"><i data-lucide="indian-rupee"></i></div>
+          <span>UPI Payment</span>
+          <span class="badge-pill">Instant</span>
+        </button>
+
+        <!-- 6. Crypto -->
+        <button class="type-btn" data-type="crypto" data-cat="finance" id="type-btn-crypto">
+          <div class="type-icon-wrapper"><i data-lucide="coins"></i></div>
+          <span>Crypto Wallet</span>
+        </button>
+
+        <!-- 7. WhatsApp -->
+        <button class="type-btn" data-type="whatsapp" data-cat="connect" id="type-btn-whatsapp">
+          <div class="type-icon-wrapper"><i data-lucide="message-circle"></i></div>
+          <span>WhatsApp</span>
+        </button>
+
+        <!-- 8. Email -->
+        <button class="type-btn" data-type="email" data-cat="connect" id="type-btn-email">
+          <div class="type-icon-wrapper"><i data-lucide="mail"></i></div>
+          <span>Email</span>
+        </button>
+
+        <!-- 9. Phone Call -->
+        <button class="type-btn" data-type="phone" data-cat="connect" id="type-btn-phone">
+          <div class="type-icon-wrapper"><i data-lucide="phone"></i></div>
+          <span>Phone Call</span>
+        </button>
+
+        <!-- 10. SMS -->
+        <button class="type-btn" data-type="sms" data-cat="connect" id="type-btn-sms">
+          <div class="type-icon-wrapper"><i data-lucide="message-square"></i></div>
+          <span>SMS Message</span>
+        </button>
+
+        <!-- 11. PayPal -->
+        <button class="type-btn" data-type="paypal" data-cat="finance" id="type-btn-paypal">
+          <div class="type-icon-wrapper"><i data-lucide="credit-card"></i></div>
+          <span>PayPal</span>
+        </button>
+
+        <!-- 12. Location -->
+        <button class="type-btn" data-type="location" data-cat="utility" id="type-btn-location">
+          <div class="type-icon-wrapper"><i data-lucide="map-pin"></i></div>
+          <span>GPS & Maps</span>
+        </button>
+
+        <!-- 13. Event -->
+        <button class="type-btn" data-type="event" data-cat="utility" id="type-btn-event">
+          <div class="type-icon-wrapper"><i data-lucide="calendar"></i></div>
+          <span>Event / iCal</span>
+        </button>
+
+        <!-- 14. File to Data URI -->
+        <button class="type-btn" data-type="file" data-cat="utility" id="type-btn-file">
+          <div class="type-icon-wrapper"><i data-lucide="file-up"></i></div>
+          <span>File to QR</span>
+        </button>
+
+        <!-- 15. Audio Voice Note -->
+        <button class="type-btn" data-type="audio" data-cat="utility" id="type-btn-audio">
+          <div class="type-icon-wrapper"><i data-lucide="mic"></i></div>
+          <span>Voice Note</span>
+          <span class="badge-pill">Audio</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Studio 2-Column Layout -->
+    <div class="studio-layout">
+
+      <!-- Left Column: Input Form & Style Studio -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <i data-lucide="sliders-horizontal" id="panel-state-icon"></i>
+            <span id="panel-title-text">QR Content Configuration</span>
+          </div>
+
+          <div class="tab-nav" style="margin-bottom: 0;">
+            <button class="tab-btn active" id="tab-btn-content">
+              <i data-lucide="edit-3"></i> Content
+            </button>
+            <button class="tab-btn" id="tab-btn-style">
+              <i data-lucide="palette"></i> Design & Style
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body">
+          
+          <!-- TAB 1: DYNAMIC CONTENT FORMS -->
+          <div id="tab-content-container">
+
+            <!-- 1. URL FORM -->
+            <form id="form-url" class="form-section">
+              <div class="form-group">
+                <label class="form-label" for="url-input">
+                  Target Website URL
+                  <span class="label-tip">Auto-detects https://</span>
+                </label>
+                <input type="url" id="url-input" class="form-control" placeholder="https://yourwebsite.com/profile" value="https://antigravity.google">
+              </div>
+
+              <!-- UTM Builder Accordion -->
+              <details class="form-group" style="cursor: pointer;">
+                <summary class="form-label" style="color: var(--accent-cyan); font-weight: 600;">
+                  + Optional Campaign UTM Tracking Parameters
+                </summary>
+                <div class="input-row" style="margin-top: 0.8rem;">
+                  <div class="form-group">
+                    <label class="form-label">UTM Source</label>
+                    <input type="text" id="url-utm-source" class="form-control" placeholder="qr-poster">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">UTM Medium</label>
+                    <input type="text" id="url-utm-medium" class="form-control" placeholder="print">
+                  </div>
+                </div>
+                <div class="form-group" style="margin-top: 0.8rem;">
+                  <label class="form-label">UTM Campaign</label>
+                  <input type="text" id="url-utm-campaign" class="form-control" placeholder="launch-2026">
+                </div>
+              </details>
+            </form>
+
+            <!-- 2. TEXT FORM -->
+            <form id="form-text" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="text-input">
+                  Plain Text / Secret Note / Markdown
+                  <span class="label-tip">Encodes UTF-8 characters</span>
+                </label>
+                <textarea id="text-input" class="form-control code-font" placeholder="Type or paste any text, secret message, code snippet, or credentials..."></textarea>
+              </div>
+            </form>
+
+            <!-- 3. WI-FI FORM -->
+            <form id="form-wifi" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="wifi-ssid">Network SSID (Wi-Fi Name)</label>
+                <input type="text" id="wifi-ssid" class="form-control" placeholder="e.g. Starlink_Guest">
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="wifi-password">Wi-Fi Password</label>
+                  <input type="text" id="wifi-password" class="form-control" placeholder="Network password">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="wifi-encryption">Encryption Security</label>
+                  <select id="wifi-encryption" class="form-control">
+                    <option value="WPA">WPA / WPA2 / WPA3 (Default)</option>
+                    <option value="WEP">WEP (Legacy)</option>
+                    <option value="nopass">None (Open Public Wi-Fi)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="switch-wrapper" id="wifi-hidden-toggle">
+                <div class="switch-label-group">
+                  <span class="switch-title">Hidden SSID Network</span>
+                  <span class="switch-desc">Enable if this network does not broadcast its SSID</span>
+                </div>
+                <div class="switch-toggle"></div>
+              </div>
+            </form>
+
+            <!-- 4. VCARD / CONTACT FORM -->
+            <form id="form-vcard" class="form-section" style="display: none;">
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="vcard-fn">First Name</label>
+                  <input type="text" id="vcard-fn" class="form-control" placeholder="John">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vcard-ln">Last Name</label>
+                  <input type="text" id="vcard-ln" class="form-control" placeholder="Doe">
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="vcard-org">Organization / Company</label>
+                  <input type="text" id="vcard-org" class="form-control" placeholder="Acme Corp">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vcard-title">Job Title</label>
+                  <input type="text" id="vcard-title" class="form-control" placeholder="Senior Architect">
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="vcard-mobile">Mobile Phone</label>
+                  <input type="tel" id="vcard-mobile" class="form-control" placeholder="+1 234 567 8900">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vcard-email">Email Address</label>
+                  <input type="email" id="vcard-email" class="form-control" placeholder="john@example.com">
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="vcard-url">Website URL</label>
+                  <input type="url" id="vcard-url" class="form-control" placeholder="https://johndoe.com">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="vcard-addr">Office / City Address</label>
+                  <input type="text" id="vcard-addr" class="form-control" placeholder="San Francisco, CA">
+                </div>
+              </div>
+            </form>
+
+            <!-- 5. UPI PAYMENT FORM -->
+            <form id="form-upi" class="form-section" style="display: none;">
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="upi-vpa">UPI ID / VPA</label>
+                  <input type="text" id="upi-vpa" class="form-control" placeholder="e.g. merchant@okhdfcbank" value="payee@upi">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="upi-name">Payee / Merchant Name</label>
+                  <input type="text" id="upi-name" class="form-control" placeholder="John Store" value="John Store">
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="upi-amount">Amount (Optional)</label>
+                  <input type="number" id="upi-amount" class="form-control" placeholder="Amount in ₹" step="0.01">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="upi-note">Payment Description / Note</label>
+                  <input type="text" id="upi-note" class="form-control" placeholder="Dinner Bill / Order #123">
+                </div>
+              </div>
+            </form>
+
+            <!-- 6. CRYPTO FORM -->
+            <form id="form-crypto" class="form-section" style="display: none;">
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="crypto-coin">Cryptocurrency</label>
+                  <select id="crypto-coin" class="form-control">
+                    <option value="bitcoin">Bitcoin (BTC)</option>
+                    <option value="ethereum">Ethereum (ETH)</option>
+                    <option value="solana">Solana (SOL)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="crypto-amount">Amount (Optional)</label>
+                  <input type="number" id="crypto-amount" class="form-control" placeholder="0.005" step="any">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="crypto-address">Receiving Wallet Address</label>
+                <input type="text" id="crypto-address" class="form-control code-font" placeholder="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa">
+              </div>
+            </form>
+
+            <!-- 7. WHATSAPP FORM -->
+            <form id="form-whatsapp" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="wa-phone">
+                  Phone Number with Country Code
+                  <span class="label-tip">No '+' or spaces, e.g. 14155552671</span>
+                </label>
+                <input type="tel" id="wa-phone" class="form-control" placeholder="14155552671">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="wa-message">Pre-filled Chat Message</label>
+                <textarea id="wa-message" class="form-control" placeholder="Hello! I would like to inquire about..."></textarea>
+              </div>
+            </form>
+
+            <!-- 8. EMAIL FORM -->
+            <form id="form-email" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="email-to">Recipient Email Address</label>
+                <input type="email" id="email-to" class="form-control" placeholder="contact@example.com">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="email-subject">Subject Line</label>
+                <input type="text" id="email-subject" class="form-control" placeholder="Inquiry about your services">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="email-body">Email Message Body</label>
+                <textarea id="email-body" class="form-control" placeholder="Hello team..."></textarea>
+              </div>
+            </form>
+
+            <!-- 9. PHONE FORM -->
+            <form id="form-phone" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="phone-input">Phone Number to Call</label>
+                <input type="tel" id="phone-input" class="form-control" placeholder="+1 (555) 000-1122">
+              </div>
+            </form>
+
+            <!-- 10. SMS FORM -->
+            <form id="form-sms" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="sms-phone">Phone Number</label>
+                <input type="tel" id="sms-phone" class="form-control" placeholder="+1234567890">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="sms-message">SMS Text Message</label>
+                <textarea id="sms-message" class="form-control" placeholder="Your verification code is..."></textarea>
+              </div>
+            </form>
+
+            <!-- 11. PAYPAL FORM -->
+            <form id="form-paypal" class="form-section" style="display: none;">
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="paypal-user">PayPal.me Username</label>
+                  <input type="text" id="paypal-user" class="form-control" placeholder="username">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="paypal-amount">Fixed Amount (Optional)</label>
+                  <input type="number" id="paypal-amount" class="form-control" placeholder="25" step="0.01">
+                </div>
+              </div>
+            </form>
+
+            <!-- 12. LOCATION FORM -->
+            <form id="form-location" class="form-section" style="display: none;">
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="loc-lat">Latitude</label>
+                  <input type="text" id="loc-lat" class="form-control" placeholder="37.7749">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="loc-lng">Longitude</label>
+                  <input type="text" id="loc-lng" class="form-control" placeholder="-122.4194">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="loc-query">Or Search Place / Address</label>
+                <input type="text" id="loc-query" class="form-control" placeholder="Times Square, New York, NY">
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-get-current-gps">
+                <i data-lucide="crosshair"></i> Use My Current GPS Location
+              </button>
+            </form>
+
+            <!-- 13. CALENDAR EVENT FORM -->
+            <form id="form-event" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label" for="evt-title">Event Title</label>
+                <input type="text" id="evt-title" class="form-control" placeholder="Global Developer Summit 2026">
+              </div>
+              <div class="input-row">
+                <div class="form-group">
+                  <label class="form-label" for="evt-start">Start Date & Time</label>
+                  <input type="datetime-local" id="evt-start" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="evt-end">End Date & Time</label>
+                  <input type="datetime-local" id="evt-end" class="form-control">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="evt-loc">Event Location / Zoom Link</label>
+                <input type="text" id="evt-loc" class="form-control" placeholder="Moscone Center / Online">
+              </div>
+            </form>
+
+            <!-- 14. FILE TO QR FORM -->
+            <form id="form-file" class="form-section" style="display: none;">
+              <div class="form-group">
+                <label class="form-label">Upload File to Encode as Data URI</label>
+                <div class="upload-dropzone" id="file-dropzone">
+                  <i data-lucide="upload-cloud"></i>
+                  <span>Click to choose or drag & drop (vCard, TXT, JSON, small image &lt; 2KB)</span>
+                  <input type="file" id="file-input" style="display: none;">
+                </div>
+                <div id="file-status" style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem;"></div>
+              </div>
+            </form>
+
+            <!-- 15. AUDIO VOICE NOTE TO QR FORM -->
+            <form id="form-audio" class="form-section" style="display: none;">
+              <div class="audio-recorder-box">
+                <button type="button" class="record-btn" id="btn-record-voice" title="Click to Record">
+                  <i data-lucide="mic" id="record-mic-icon"></i>
+                </button>
+                <div>
+                  <h4 id="record-status-text" style="font-weight: 700; margin-bottom: 0.2rem;">Press to Record Voice Note</h4>
+                  <p id="record-timer-text" style="font-size: 0.8rem; color: var(--text-muted);">Record up to 6 seconds of voice audio</p>
+                </div>
+                <audio id="audio-playback" controls class="audio-preview-player" style="display: none;"></audio>
+              </div>
+            </form>
+
+          </div>
+
+          <!-- TAB 2: DESIGN & STYLE STUDIO -->
+          <div id="tab-style-container" style="display: none;" class="form-section">
+
+            <!-- Curated Palettes -->
+            <div class="form-group">
+              <label class="form-label">Curated Color Palettes</label>
+              <div class="palette-list" id="palette-buttons-list"></div>
+            </div>
+
+            <!-- Dot Pattern Style -->
+            <div class="form-group">
+              <label class="form-label">Body Pattern Shape</label>
+              <div class="options-grid" id="dot-style-grid">
+                <div class="style-chip active" data-dot="rounded">Rounded</div>
+                <div class="style-chip" data-dot="dots">Dots</div>
+                <div class="style-chip" data-dot="extra-rounded">Pill</div>
+                <div class="style-chip" data-dot="classy">Classy</div>
+                <div class="style-chip" data-dot="classy-rounded">Smooth</div>
+                <div class="style-chip" data-dot="square">Classic</div>
+              </div>
+            </div>
+
+            <!-- Corner Square & Dot Styles -->
+            <div class="input-row">
+              <div class="form-group">
+                <label class="form-label">Corner Eye Frame</label>
+                <div class="options-grid" id="corner-square-grid">
+                  <div class="style-chip active" data-corner-square="extra-rounded">Rounded</div>
+                  <div class="style-chip" data-corner-square="dot">Circle</div>
+                  <div class="style-chip" data-corner-square="square">Square</div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Corner Eye Center</label>
+                <div class="options-grid" id="corner-dot-grid">
+                  <div class="style-chip active" data-corner-dot="dot">Circle</div>
+                  <div class="style-chip" data-corner-dot="square">Square</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Color & Gradient Customization -->
+            <div class="form-group">
+              <label class="form-label">Custom QR Color Mode</label>
+              <div class="switch-wrapper" id="gradient-mode-toggle">
+                <div class="switch-label-group">
+                  <span class="switch-title">Two-Tone Gradient</span>
+                  <span class="switch-desc">Blend two colors smoothly across the QR code</span>
+                </div>
+                <div class="switch-toggle"></div>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="color-picker-row">
+                <div class="color-input-wrapper">
+                  <input type="color" id="qr-color-1" value="#8b5cf6">
+                </div>
+                <div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">PRIMARY COLOR</div>
+                  <input type="text" class="color-val-text" id="qr-color-1-val" value="#8B5CF6">
+                </div>
+              </div>
+
+              <div class="color-picker-row" id="color-2-container" style="display: none;">
+                <div class="color-input-wrapper">
+                  <input type="color" id="qr-color-2" value="#06b6d4">
+                </div>
+                <div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">GRADIENT ACCENT</div>
+                  <input type="text" class="color-val-text" id="qr-color-2-val" value="#06B6D4">
+                </div>
+              </div>
+            </div>
+
+            <div class="input-row">
+              <div class="color-picker-row">
+                <div class="color-input-wrapper">
+                  <input type="color" id="qr-bg-color" value="#ffffff">
+                </div>
+                <div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">BACKGROUND</div>
+                  <input type="text" class="color-val-text" id="qr-bg-color-val" value="#FFFFFF">
+                </div>
+              </div>
+
+              <div class="switch-wrapper" id="transparent-bg-toggle">
+                <div class="switch-label-group">
+                  <span class="switch-title">Transparent BG</span>
+                  <span class="switch-desc">Alpha transparent</span>
+                </div>
+                <div class="switch-toggle"></div>
+              </div>
+            </div>
+
+            <!-- Center Watermark Logo -->
+            <div class="form-group">
+              <label class="form-label">
+                Center Logo / Watermark
+                <span class="label-tip">Auto-increases error correction</span>
+              </label>
+
+              <div class="logo-selector-grid" id="preset-logos-grid">
+                <button type="button" class="logo-preset-btn active" data-logo="none" title="None">
+                  <i data-lucide="slash"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="wifi" title="Wi-Fi">
+                  <i data-lucide="wifi"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="whatsapp" title="WhatsApp">
+                  <i data-lucide="message-circle"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="upi" title="UPI / Rupee">
+                  <i data-lucide="indian-rupee"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="bitcoin" title="Bitcoin">
+                  <i data-lucide="bitcoin"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="ethereum" title="Ethereum">
+                  <i data-lucide="coins"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="phone" title="Phone">
+                  <i data-lucide="phone"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="mail" title="Mail">
+                  <i data-lucide="mail"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="globe" title="Web">
+                  <i data-lucide="globe"></i>
+                </button>
+                <button type="button" class="logo-preset-btn" data-logo="star" title="Star">
+                  <i data-lucide="star"></i>
+                </button>
+              </div>
+
+              <div class="upload-dropzone" id="logo-dropzone">
+                <i data-lucide="image"></i>
+                <span>Upload Custom Logo (PNG / SVG)</span>
+                <input type="file" id="logo-file-input" accept="image/*" style="display: none;">
+              </div>
+            </div>
+
+            <!-- Call-to-Action Frame Templates -->
+            <div class="form-group">
+              <label class="form-label">Frame & Call-to-Action Banner</label>
+              <div class="frame-selector" id="frame-selector-grid">
+                <div class="frame-card-option active" data-frame="none">
+                  <div class="frame-mini-preview"></div>
+                  <span>No Frame</span>
+                </div>
+                <div class="frame-card-option" data-frame="scan-me-top">
+                  <div class="frame-mini-preview">
+                    <div class="frame-mini-badge">SCAN ME</div>
+                  </div>
+                  <span>Top Banner</span>
+                </div>
+                <div class="frame-card-option" data-frame="scan-me-bottom">
+                  <div class="frame-mini-preview">
+                    <div style="flex: 1;"></div>
+                    <div class="frame-mini-badge">SCAN ME</div>
+                  </div>
+                  <span>Bottom Banner</span>
+                </div>
+                <div class="frame-card-option" data-frame="badge">
+                  <div class="frame-mini-preview">
+                    <div style="flex: 1;"></div>
+                    <div class="frame-mini-badge" style="border-radius: 99px;">PILL</div>
+                  </div>
+                  <span>Pill Badge</span>
+                </div>
+              </div>
+
+              <div id="frame-custom-controls" style="display: none; margin-top: 0.8rem;" class="form-section">
+                <div class="input-row">
+                  <div class="form-group">
+                    <label class="form-label">Banner Text</label>
+                    <input type="text" id="frame-text-input" class="form-control" value="SCAN ME">
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Banner Color</label>
+                    <div class="color-picker-row" style="height: 44px; padding: 0.3rem 0.6rem;">
+                      <div class="color-input-wrapper">
+                        <input type="color" id="frame-color-picker" value="#8b5cf6">
+                      </div>
+                      <input type="text" class="color-val-text" id="frame-color-val" value="#8B5CF6">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right Column: Live Interactive Preview Stage -->
+      <div class="preview-stage-container">
+        
+        <div class="preview-card">
+          <div class="preview-card-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; font-weight: 700;">
+              <i data-lucide="eye" style="color: var(--accent-cyan);"></i>
+              <span>Live Preview</span>
+            </div>
+
+            <!-- Mockup Mode Switcher -->
+            <div class="view-mode-pills">
+              <button class="view-mode-btn active" data-mockup="flat" title="Flat Canvas">
+                <i data-lucide="square"></i> Flat
+              </button>
+              <button class="view-mode-btn" data-mockup="phone" title="Smartphone Screen">
+                <i data-lucide="smartphone"></i> Phone
+              </button>
+              <button class="view-mode-btn" data-mockup="tent" title="Table Tent Stand">
+                <i data-lucide="coffee"></i> Stand
+              </button>
+              <button class="view-mode-btn" data-mockup="card" title="Business Card">
+                <i data-lucide="id-card"></i> Card
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Stage Canvas -->
+          <div class="qr-canvas-wrapper" id="qr-stage-wrapper">
+            
+            <div class="qr-render-target" id="qr-render-box">
+              <div class="qr-frame-badge pos-top" id="badge-top">SCAN ME</div>
+              <div id="qr-live-canvas"></div>
+              <div class="qr-frame-badge pos-bottom" id="badge-bottom">SCAN ME</div>
+            </div>
+
+          </div>
+
+          <!-- Complexity & Payload Stats Meter -->
+          <div class="qr-meta-bar">
+            <div class="meta-item">
+              <i data-lucide="file-text" style="width: 14px;"></i>
+              <span>Length:</span>
+              <span class="meta-val" id="meta-chars">27 chars</span>
+            </div>
+            <div class="meta-item">
+              <i data-lucide="hard-drive" style="width: 14px;"></i>
+              <span>Size:</span>
+              <span class="meta-val" id="meta-bytes">27 B</span>
+            </div>
+            <div class="meta-item">
+              <i data-lucide="shield-check" style="width: 14px;"></i>
+              <span>Correction:</span>
+              <span class="meta-val" id="meta-ecc">High (30%)</span>
+            </div>
+          </div>
+
+          <!-- Export Actions -->
+          <div class="action-grid">
+            <button class="btn btn-primary" id="btn-download-png">
+              <i data-lucide="download"></i>
+              <span>Download PNG</span>
+            </button>
+
+            <button class="btn btn-secondary" id="btn-download-svg">
+              <i data-lucide="file-code-2"></i>
+              <span>Vector SVG</span>
+            </button>
+
+            <button class="btn btn-outline" id="btn-copy-clipboard">
+              <i data-lucide="copy" id="copy-icon"></i>
+              <span>Copy Image</span>
+            </button>
+
+            <button class="btn btn-outline" id="btn-print-qr">
+              <i data-lucide="printer"></i>
+              <span>Print Card</span>
+            </button>
+
+            <button class="btn btn-secondary btn-full" id="btn-save-history">
+              <i data-lucide="bookmark-plus"></i>
+              <span>Save to My Library</span>
+            </button>
+          </div>
+
+          <!-- Resolution & Format Settings -->
+          <div class="export-options-bar">
+            <div class="resolution-picker">
+              <span>Resolution:</span>
+              <select id="export-resolution-select">
+                <option value="512">512px (Web)</option>
+                <option value="1024" selected>1024px (HD Print)</option>
+                <option value="2048">2048px (Ultra 2K)</option>
+                <option value="4096">4096px (Ultra 4K Print)</option>
+              </select>
+            </div>
+            <button id="btn-download-jpeg" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:0.75rem;">
+              Download as JPEG
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- =========================================================================
+       MODALS: Scanner, Batch, History
+       ========================================================================= -->
+
+  <!-- 1. LIVE SCANNER & DECODER MODAL -->
+  <div class="modal-overlay" id="scanner-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="scan" style="color: var(--accent-primary);"></i>
+          <span>Live QR Scanner & Decoder</span>
+        </div>
+        <button class="modal-close-btn" id="scanner-modal-close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div id="scanner-viewport"></div>
+
+        <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+          <button class="btn btn-primary" id="btn-start-camera" style="flex: 1;">
+            <i data-lucide="camera"></i> Start Camera
+          </button>
+          <button class="btn btn-secondary" id="btn-upload-scan-file" style="flex: 1;">
+            <i data-lucide="image"></i> Decode Image File
+          </button>
+          <input type="file" id="scan-file-input" accept="image/*" style="display: none;">
+        </div>
+
+        <div class="scanner-result-card" id="scanner-result-box">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-weight: 700; color: var(--accent-emerald);" id="scan-result-label">Decoded QR Result</span>
+            <button class="btn btn-outline btn-sm" id="btn-copy-scan-result">
+              <i data-lucide="copy"></i> Copy
+            </button>
+          </div>
+          <div class="scanner-payload-text" id="scan-result-payload"></div>
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button class="btn btn-primary btn-sm" id="btn-send-to-studio" style="flex: 1;">
+              <i data-lucide="wand-2"></i> Open in Studio & Re-Design
+            </button>
+            <a href="#" target="_blank" class="btn btn-secondary btn-sm" id="btn-open-scan-link" style="display: none;">
+              <i data-lucide="external-link"></i> Open Link
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. BATCH GENERATOR MODAL -->
+  <div class="modal-overlay" id="batch-modal">
+    <div class="modal-dialog" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="layers" style="color: var(--accent-cyan);"></i>
+          <span>Batch Bulk QR Generator</span>
+        </div>
+        <button class="modal-close-btn" id="batch-modal-close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">
+            Paste Items (One per line or CSV: Name, Data)
+            <span class="label-tip">Supports up to 50 items at once</span>
+          </label>
+          <textarea id="batch-input-area" class="form-control code-font" style="height: 140px;" placeholder="Table 1, https://menu.cafe.com/table1
+Table 2, https://menu.cafe.com/table2
+Wi-Fi Guest, WIFI:S:GuestNet;T:WPA;P:guest123;;
+https://antigravity.google"></textarea>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin: 1rem 0;">
+          <span style="font-size: 0.8rem; color: var(--text-muted);" id="batch-counter-text">Ready to generate</span>
+          <button class="btn btn-primary" id="btn-run-batch">
+            <i data-lucide="play"></i> Generate All
+          </button>
+        </div>
+
+        <div id="batch-progress-wrapper" style="display: none; margin-bottom: 1rem;">
+          <div style="height: 6px; background: var(--bg-tertiary); border-radius: var(--radius-full); overflow: hidden;">
+            <div id="batch-progress-fill" style="height: 100%; width: 0%; background: var(--grad-primary); transition: width 0.2s;"></div>
+          </div>
+        </div>
+
+        <div class="history-grid" id="batch-preview-grid" style="display: none; max-height: 260px;"></div>
+      </div>
+
+      <div class="modal-footer" id="batch-modal-footer" style="display: none;">
+        <button class="btn btn-primary" id="btn-download-batch-zip">
+          <i data-lucide="archive"></i> Download All as ZIP
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. HISTORY & SAVED LIBRARY MODAL -->
+  <div class="modal-overlay" id="history-modal">
+    <div class="modal-dialog" style="max-width: 720px;">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i data-lucide="history" style="color: var(--accent-amber);"></i>
+          <span>Saved QR Library</span>
+        </div>
+        <button class="modal-close-btn" id="history-modal-close">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <span style="font-size: 0.82rem; color: var(--text-muted);" id="history-count-badge">0 saved codes</span>
+          <button class="btn btn-outline btn-sm" id="btn-clear-all-history">
+            <i data-lucide="trash-2"></i> Clear History
+          </button>
+        </div>
+
+        <div class="history-grid" id="history-items-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Main Application Script (ES Module) -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
